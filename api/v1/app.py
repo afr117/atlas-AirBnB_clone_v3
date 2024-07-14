@@ -1,24 +1,28 @@
 #!/usr/bin/python3
 """
-app.py - Flask application for the HBNB API.
+index.py - API views for handling status and stats endpoints.
 """
 
-from flask import Flask
-from models import storage
+from flask import jsonify
 from api.v1.views import app_views
-import os  # Ensure os is imported
-
-app = Flask(__name__)
-app.register_blueprint(app_views)
+from models import storage
 
 
-@app.teardown_appcontext
-def teardown(exception):
-    """Closes the storage on teardown."""
-    storage.close()
+@app_views.route('/status', methods=['GET'])
+def status():
+    """Returns the status of the API."""
+    return jsonify({"status": "OK"})
 
 
-if __name__ == "__main__":
-    app.run(host=os.getenv('HBNB_API_HOST', '0.0.0.0'),
-            port=int(os.getenv('HBNB_API_PORT', 5000)),
-            threaded=True)
+@app_views.route('/stats', methods=['GET'])
+def stats():
+    """Returns the number of each object by type."""
+    object_count = {
+        "amenities": storage.count("Amenity"),
+        "cities": storage.count("City"),
+        "places": storage.count("Place"),
+        "reviews": storage.count("Review"),
+        "states": storage.count("State"),
+        "users": storage.count("User")
+    }
+    return jsonify(object_count)
