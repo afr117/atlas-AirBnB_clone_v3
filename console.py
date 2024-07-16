@@ -13,9 +13,10 @@ from models.state import State
 from models.user import User
 import shlex  # for splitting the line along spaces except in double quotes
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
-
+classes = {
+    "Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+    "Place": Place, "Review": Review, "State": State, "User": User
+}
 
 class HBNBCommand(cmd.Cmd):
     """ HBNH console """
@@ -31,7 +32,7 @@ class HBNBCommand(cmd.Cmd):
         return False
 
     def do_quit(self, arg):
-        """Quit command to exit the
+        """Quit command to exit the program"""
         return True
 
     def _key_value_parser(self, args):
@@ -141,12 +142,12 @@ class HBNBCommand(cmd.Cmd):
                                 if args[2] in integers:
                                     try:
                                         args[3] = int(args[3])
-                                    except:
+                                    except ValueError:
                                         args[3] = 0
                                 elif args[2] in floats:
                                     try:
                                         args[3] = float(args[3])
-                                    except:
+                                    except ValueError:
                                         args[3] = 0.0
                             setattr(models.storage.all()[k], args[2], args[3])
                             models.storage.all()[k].save()
@@ -160,6 +161,7 @@ class HBNBCommand(cmd.Cmd):
                 print("** instance id missing **")
         else:
             print("** class doesn't exist **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
