@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """State object view """
-from flask import Flask, jsonify, request, Response
+from flask import (Flask, jsonify,
+                    make_response, request, Response)
 from flask import abort
 from models.state import State
 from models.city import City
@@ -12,24 +13,22 @@ from api.v1.views import app_views
                  methods=['GET'])
 def cities(state_id):
     """retrieve City object(s)"""
+    print("===cities===")
     city_list = []
 
-    if state_id is not None:
-        all_cities = storage.all(City)
+    all_cities = storage.all(City)
 
-        single_state = storage.get(State, state_id)
-
-        if single_state is None:
-            abort(404)
-
-        for k, v in all_cities.items():
-            if getattr(v, 'state_id') == state_id:
-                city_list.append(v.to_dict())
-
-        return jsonify(city_list)
-
-    else:
+    single_state = storage.get(State, state_id)
+    
+    if single_state is None:
+        print("Aborting...")
         abort(404)
+
+    for k, v in all_cities.items():
+        if getattr(v, 'state_id') == state_id:
+            city_list.append(v.to_dict())
+
+    return jsonify(city_list)
 
 
 @app_views.route("/cities/<city_id>", strict_slashes=False,
@@ -42,6 +41,7 @@ def city(city_id):
         single_city = storage.get(City, city_id)
 
         if single_city is None:
+            print("Aborting...")
             abort(404)
 
         return jsonify(single_city.to_dict())
@@ -76,28 +76,26 @@ def city_add(state_id):
 
     if data is None:
         err_return = {"error": "Not a JSON"}
-        return jsonify(err_return), 400
+        return make_response(jsonify(err_return), 400)
 
     if "name" not in data:
         err_return = {"error": "Missing name"}
-        return jsonify(err_return), 400
+        return make_response(jsonify(err_return), 400)
 
-    if state_id is not None:
-
-        single_state = storage.get(State, state_id)
-
-        if single_state is None:
-            abort(404)
-
-        new = City(**data)
-
-        setattr(new, 'state_id', state_id)
-        storage.new(new)
-        storage.save()
-        return jsonify(new.to_dict()), 201
-
-    else:
+    if state_id is None:
         abort(404)
+
+    single_state = storage.get(State, state_id)
+
+    if single_state is None:
+        abort(404)
+
+    new = City(**data)
+
+    setattr(new, 'state_id', state_id)
+    storage.new(new)
+    storage.save()
+    return make_response(jsonify(new.to_dict()), 201)
 
 
 @app_views.route("/cities/<city_id>", strict_slashes=False, methods=['PUT'])
