@@ -22,7 +22,7 @@ def users():
 def user_id(user_id):
     """Retrieves a User object based on id"""
     if user_id is not None:
-        single_user = storage.get("User", user_id)
+        single_user = storage.get(User, user_id)
         if single_user is None:
             abort(404)
         single_user_dict = single_user.to_dict()
@@ -36,7 +36,7 @@ def user_id(user_id):
 def user_delete(user_id):
     """Deletes a user object"""
     if user_id is not None:
-        del_user = storage.get("User", user_id)
+        del_user = storage.get(User, user_id)
         if del_user is None:
             abort(404)
 
@@ -77,7 +77,7 @@ def user_update(user_id):
     if data is None:
         error_dict = {"error": "Not a JSON"}
         return jsonify(error_dict), 400
-    single_user = storage.get("User", user_id)
+    single_user = storage.get(User, user_id)
     if single_user is None:
         abort(404)
 

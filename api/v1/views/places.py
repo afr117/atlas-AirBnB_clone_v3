@@ -55,7 +55,7 @@ def city_r(place_id):
 def place_delete(place_id):
     """Deletes a city object """
     if place_id is not None:
-        del_place = storage.get("Place", place_id)
+        del_place = storage.get(Place, place_id)
 
         if del_place is None:
             abort(404)
@@ -88,9 +88,9 @@ def place_add(city_id):
 
     if city_id is not None:
 
-        single_user = storage.get("User", data["user_id"])
+        single_user = storage.get(User, data["user_id"])
 
-        single_city = storage.get("City", city_id)
+        single_city = storage.get(City, city_id)
 
         if single_user is None:
             abort(404)
@@ -117,7 +117,7 @@ def place_update(place_id):
         error_dict = {"error": "Not a JSON"}
         return jsonify(error_dict), 400
 
-    single_place = storage.get("Place", place_id)
+    single_place = storage.get(Place, place_id)
 
     if single_place is None:
         abort(404)
