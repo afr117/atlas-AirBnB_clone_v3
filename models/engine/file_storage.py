@@ -70,7 +70,6 @@ class FileStorage:
         self.reload()
 
     @classmethod
-<<<<<<< HEAD
     def get(cls, cls, id):
         """
         Gets a stored object based on its specified class and id.
@@ -81,17 +80,6 @@ class FileStorage:
 
     @classmethod
     def count(cls, cls=None):
-=======
-    def get(self, cls, id):
-        """
-        Gets a stored object based on it's specified class and id
-        """
-
-        return FileStorage.__objects[cls.__name__ + '.' + id]
-
-    @classmethod
-    def count(self, cls=None):
->>>>>>> de13bea0a0918004ab65b0250a85a3c1f9296352
         """
         Gets the count of all stored objects.
         Optional filtering for all stored objects of a specific class
