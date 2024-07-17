@@ -68,4 +68,43 @@ def place_delete(place_id):
         abort(404)
 
 
+@app_views.route("/cities/<city_id>/places", strict_slashes=False,
+                 methods=['POST'])
+def place_add(city_id):
+    """Adds a city object"""
+    data = request.get_json()
+
+    if data is None:
+        err_return = {"error": "Not a JSON"}
+        return jsonify(err_return), 400
+
+    if "user_id" not in data:
+        err_return = {"error": "Missing user_id"}
+        return jsonify(err_return), 400
+
+    if "name" not in data:
+        err_return = {"error": "Missing name"}
+        return jsonify(err_return), 400
+
+    if city_id is not None:
+
+        single_user = storage.get("User", data["user_id"])
+
+        single_city = storage.get("City", city_id)
+
+        if single_user is None:
+            abort(404)
+
+        if single_city is None:
+            abort(404)
+
+        new = Place(**data)
+
+        setattr(new, 'city_id', city_id)
+        storage.new(new)
+        storage.save()
+        return jsonify(new.to_dict()), 201
+
+    else:
+        abort(404)
 
