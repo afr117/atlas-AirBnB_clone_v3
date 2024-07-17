@@ -1,34 +1,42 @@
 #!/usr/bin/python3
 """
-index.py - API views for handling status endpoint.
+index.py - API views for handling status and stats endpoints.
 """
 
 from flask import jsonify
 from api.v1.views import app_views
+from models import storage
 from models.amenity import Amenity
 from models.city import City
 from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
-from models.__init__ import storage
 
+# Dictionary mapping class names to their corresponding classes
+classes = {
+    'amenities': Amenity,
+    'cities': City,
+    'places': Place,
+    'reviews': Review,
+    'states': State,
+    'users': User
+}
 
 @app_views.route('/status', methods=['GET'])
 def status():
     """Returns the status of the API."""
     return jsonify({"status": "OK"})
 
-@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+@app_views.route('/api/v1/stats', methods=['GET'])
 def stats():
-    """
-    Returns the number of each type of object instance
-    """
-    return jsonify({
-                    "amenities": storage.count(Amenity),
-                    "cities": storage.count(City),
-                    "places": storage.count(Place),
-                    "reviews": storage.count(Review),
-                    "states": storage.count(State),
-                    "users": storage.count(User)
-                    })
+    """Returns the number of each objects by type."""
+    stats_dict = {}
+
+    for key, cls in classes.items():
+        stats_dict[key] = storage.count(cls)
+
+    return jsonify(stats_dict)
+
+if __name__ == '__main__':
+    pass  # This allows the script to be run directly, but Flask handles this internally
