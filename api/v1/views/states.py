@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """State object view """
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, make_response, request, Response
 from flask import abort
 from models.state import State
 from models import storage
@@ -21,32 +21,22 @@ def states():
 def state_id(state_id):
     """Retrieves a State object based on id"""
     if state_id is not None:
-        single_state = storage.get("State", state_id)
-        if single_state is None:
-            abort(404)
-        single_state_dict = single_state.to_dict()
-        return jsonify(single_state_dict)
-    else:
+        state = storage.get(State, str(state_id))
+
+    if state is None:
         abort(404)
 
+    return make_response(jsonify(state.to_dict()), 201)
 
-@app_views.route("/states/<state_id>", strict_slashes=False,
-                 methods=['DELETE'])
-def state_delete(state_id):
-    """Deletes a state object"""
-    if state_id is not None:
-        del_state = storage.get("State", state_id)
-        if del_state is None:
-            abort(404)
 
-        del_state.delete()
-        storage.save()
-
-        ret_del_state = {}
-        return jsonify(ret_del_state)
-
-    else:
+@app_views.route('/states/<state_id>', methods=['DELETE'], strict_slashes=False)
+def delete_state(state_id):
+    state = storage.get(State, state_id)
+    if state is None:
         abort(404)
+    storage.delete(state)
+    storage.save()
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route("/states", strict_slashes=False, methods=['POST'])
@@ -74,7 +64,7 @@ def state_update(state_id):
     if data is None:
         error_dict = {"error": "Not a JSON"}
         return jsonify(error_dict), 400
-    single_state = storage.get("State", state_id)
+    single_state = storage.get(State, state_id)
     if single_state is None:
         abort(404)
 
