@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """
-Contains the FileStorage class
+file_storage.py
+
+Contains the FileStorage class for serializing instances to a JSON file 
+and deserializing back to instances.
 """
 
 import json
@@ -12,20 +15,41 @@ from models.review import Review
 from models.state import State
 from models.user import User
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
+# Dictionary mapping class names to their corresponding classes
+classes = {
+    "Amenity": Amenity,
+    "BaseModel": BaseModel,
+    "City": City,
+    "Place": Place,
+    "Review": Review,
+    "State": State,
+    "User": User
+}
 
 
 class FileStorage:
-    """serializes instances to a JSON file & deserializes back to instances"""
+    """
+    Handles serialization of instances to a JSON file and deserialization 
+    back to instances.
+    """
 
-    # string - path to the JSON file
+    # Path to the JSON file
     __file_path = "file.json"
-    # dictionary - empty but will store all objects by <class name>.id
+    # Dictionary to store all objects by <class name>.id
     __objects = {}
 
     def all(self, cls=None):
-        """returns the dictionary __objects"""
+        """
+        Returns a dictionary of all objects currently stored in __objects.
+
+        Args:
+        - cls (optional): If specified, filters objects to include only
+          instances of the specified class.
+
+        Returns:
+        - dict: Dictionary of objects, where keys are <class name>.id and
+          values are object instances.
+        """
         if cls is not None:
             new_dict = {}
             for key, value in self.__objects.items():
@@ -35,13 +59,20 @@ class FileStorage:
         return self.__objects
 
     def new(self, obj):
-        """sets in __objects the obj with key <obj class name>.id"""
+        """
+        Adds a new object instance to __objects.
+
+        Args:
+        - obj: Instance of a class to be added to __objects.
+        """
         if obj is not None:
             key = obj.__class__.__name__ + "." + obj.id
             self.__objects[key] = obj
 
     def save(self):
-        """serializes __objects to the JSON file (path: __file_path)"""
+        """
+        Serializes __objects to the JSON file specified by __file_path.
+        """
         json_objects = {}
         for key in self.__objects:
             json_objects[key] = self.__objects[key].to_dict()
@@ -49,31 +80,49 @@ class FileStorage:
             json.dump(json_objects, f)
 
     def reload(self):
-        """deserializes the JSON file to __objects"""
+        """
+        Deserializes the JSON file specified by __file_path back into 
+        __objects.
+        """
         try:
             with open(self.__file_path, 'r') as f:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
-        """delete obj from __objects if it’s inside"""
+        """
+        Deletes an object instance from __objects if it exists.
+
+        Args:
+        - obj (optional): Instance of a class to be removed from __objects.
+        """
         if obj is not None:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:
                 del self.__objects[key]
 
     def close(self):
-        """call reload() method for deserializing the JSON file to objects"""
+        """
+        Calls reload() method to deserialize the JSON file back into 
+        __objects.
+        """
         self.reload()
 
     @classmethod
     def get(cls, cls, id):
         """
-        Gets a stored object based on its specified class and id.
-        If the object doesn't exist, return None.
+        Retrieves a stored object instance based on its specified class 
+        and id.
+
+        Args:
+        - cls: Class of the object to retrieve.
+        - id: ID of the object to retrieve.
+
+        Returns:
+        - obj: Instance of the specified class and ID if found, else None.
         """
         key = cls.__name__ + '.' + id
         return FileStorage.__objects.get(key, None)
@@ -81,11 +130,15 @@ class FileStorage:
     @classmethod
     def count(cls, cls=None):
         """
-        Gets the count of all stored objects.
-        Optional filtering for all stored objects of a specific class
-        can be specified by calling 'count(<classname>)'.
-        """
+        Counts the number of objects stored in __objects.
 
+        Args:
+        - cls (optional): If specified, counts only objects of the specified
+          class.
+
+        Returns:
+        - int: Number of objects stored in __objects.
+        """
         if cls is None:
             return len(FileStorage.__objects)
         return len([
