@@ -32,3 +32,21 @@ def places(city_id):
 
     else:
         abort(404)
+
+@app_views.route("/places/<place_id>", strict_slashes=False,
+                 methods=['GET'])
+def city_r(place_id):
+    """Retreive city object with city_id"""
+    if place_id is not None:
+
+        single_place = storage.get(Place, place_id)
+
+        if single_place is None:
+            abort(404)
+
+        return jsonify(single_place.to_dict())
+
+    else:
+        abort(404)
+
+
