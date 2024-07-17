@@ -28,7 +28,7 @@ def status():
     """Returns the status of the API."""
     return jsonify({"status": "OK"})
 
-@app_views.route('/api/v1/stats', methods=['GET'])
+@app_views.route('/stats', methods=['GET'])
 def stats():
     """Returns the number of each objects by type."""
     stats_dict = {}
@@ -39,4 +39,4 @@ def stats():
     return jsonify(stats_dict)
 
 if __name__ == '__main__':
-    pass  # This allows the script to be run directly, but Flask handles this internally
+    pass
