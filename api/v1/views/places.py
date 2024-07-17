@@ -50,3 +50,22 @@ def city_r(place_id):
         abort(404)
 
 
+@app_views.route("/places/<place_id>", strict_slashes=False,
+                 methods=['DELETE'])
+def place_delete(place_id):
+    """Deletes a city object """
+    if place_id is not None:
+        del_place = storage.get("Place", place_id)
+
+        if del_place is None:
+            abort(404)
+
+        del_place.delete()
+        storage.save()
+        return {}
+
+    else:
+        abort(404)
+
+
+
