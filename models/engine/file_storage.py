@@ -112,7 +112,7 @@ class FileStorage:
         self.reload()
 
     @classmethod
-    def get(cls, cls, id):
+    def get(self, cls, id):
         """
         Retrieves a stored object instance based on its specified class 
         and id.
@@ -128,7 +128,7 @@ class FileStorage:
         return FileStorage.__objects.get(key, None)
 
     @classmethod
-    def count(cls, cls=None):
+    def count(self, cls=None):
         """
         Counts the number of objects stored in __objects.
 
