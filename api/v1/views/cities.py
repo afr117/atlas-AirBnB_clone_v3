@@ -21,7 +21,6 @@ def cities(state_id):
     single_state = storage.get(State, state_id)
     
     if single_state is None:
-        print("Aborting...")
         abort(404)
 
     for k, v in all_cities.items():
