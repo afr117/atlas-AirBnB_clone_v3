@@ -62,16 +62,24 @@ def state_add():
 @app_views.route("/states/<state_id>", strict_slashes=False, methods=['PUT'])
 def state_update(state_id):
     """Update an existing state object"""
-    data = request.get_json()
+    try:
+        data = request.get_json()
+    except Exception as e:
+        return jsonify({"error": "Not a JSON"}), 400
+
     if data is None:
-        error_dict = {"error": "Not a JSON"}
-        return jsonify(error_dict), 400
-    single_state = storage.get(State, state_id)
-    if single_state is None:
+        return jsonify({"error": "Not a JSON"}), 400
+
+    state = storage.get(State, state_id)
+    if state is None:
         abort(404)
 
-    setattr(single_state, 'name', data['name'])
-    single_state.save()
+    # Update the state with all key-value pairs except for id, created_at, and updated_at
+    for key, value in data.items():
+        if key not in ["id", "created_at", "updated_at"]:
+            setattr(state, key, value)
+    
+    state.save()
     storage.save()
+    return jsonify(state.to_dict()), 200
 
-    return jsonify(single_state.to_dict())
