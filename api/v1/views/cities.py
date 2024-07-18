@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """State object view """
 from flask import (Flask, jsonify,
-                    make_response, request, Response)
+make_response, request, Response)
 from flask import abort
 from models.state import State
 from models.city import City
@@ -19,7 +19,7 @@ def cities(state_id):
     all_cities = storage.all(City)
 
     single_state = storage.get(State, state_id)
-    
+
     if single_state is None:
         abort(404)
 
@@ -67,7 +67,8 @@ def city_delete(city_id):
         abort(404)
 
 
-@app_views.route("/states/<state_id>/cities", strict_slashes=False, methods=['POST'])
+@app_views.route("/states/<state_id>/cities",
+                 strict_slashes=False, methods=['POST'])
 def city_add(state_id):
     """Adds a city object"""
     try:
@@ -113,5 +114,5 @@ def city_update(city_id):
 
     single_city.save()
     storage.save()
-    
+
     return jsonify(single_city.to_dict()), 200
