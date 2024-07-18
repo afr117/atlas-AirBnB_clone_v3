@@ -95,19 +95,23 @@ def city_add(state_id):
 @app_views.route("/cities/<city_id>", strict_slashes=False, methods=['PUT'])
 def city_update(city_id):
     """Update a city object"""
-    data = request.get_json()
+    try:
+        data = request.get_json()
+    except Exception:
+        return jsonify({"error": "Not a JSON"}), 400
 
     if data is None:
-        error_dict = {"error": "Not a JSON"}
-        return jsonify(error_dict), 400
+        return jsonify({"error": "Not a JSON"}), 400
 
     single_city = storage.get(City, city_id)
-
     if single_city is None:
         abort(404)
 
-    setattr(single_city, 'name', data['name'])
+    # Update only allowed fields
+    if 'name' in data:
+        setattr(single_city, 'name', data['name'])
+
     single_city.save()
     storage.save()
-
-    return jsonify(single_city.to_dict())
+    
+    return jsonify(single_city.to_dict()), 200
