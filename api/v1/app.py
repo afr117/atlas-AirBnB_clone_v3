@@ -4,11 +4,13 @@ app.py - Flask application for the HBNB API.
 """
 
 from flask import Flask, jsonify
+from flask_cors import CORS  # Import CORS
 from models import storage
 from api.v1.views import app_views
 import os
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all origins
 app.register_blueprint(app_views)
 
 @app.teardown_appcontext
