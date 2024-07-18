@@ -10,10 +10,7 @@ from api.v1.views import app_views
 import os
 
 app = Flask(__name__)
-
-# Configure CORS to allow all origins for testing
-CORS(app, resources={r"/*": {"origins": "*"}})
-
+CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})  # Allow CORS
 app.register_blueprint(app_views)
 
 @app.teardown_appcontext
