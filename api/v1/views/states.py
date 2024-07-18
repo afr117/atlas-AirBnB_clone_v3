@@ -80,7 +80,7 @@ def state_update(state_id):
     if state is None:
         abort(404)
 
-    # Update the state with all key-value pairs except for id, created_at, and updated_at
+    # Update state with all key-value pairs except id, created_at, and updated_at
     for key, value in data.items():
         if key not in ["id", "created_at", "updated_at"]:
             setattr(state, key, value)
